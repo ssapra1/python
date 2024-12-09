@@ -2,28 +2,25 @@ import streamlit as st
 import pandas as pd
 import numpy as np 
 
+import time
+import os
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
-## title for webpage 
 
-st.title("Hellow this is my firts web application in python")
+def upload_and_display_csv():
+    st.title("CSV File Upload and Display")
 
-## display text
+    uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
+    submitted1 = st.form_submit_button('Submit 1')
+    st.write(submitted1)
+    if submitted1:
+       if uploaded_file is not None:
+        time.sleep(20)
+        data = pd.read_csv(uploaded_file)
 
-st.write("this is a simple ext ") 
+        st.write("Here is the uploaded file's data:")
+        st.dataframe(data)
 
-df = pd.DataFrame({
-    'first Column':[1,2,3,4],
-    'second column':[10,20,30,40]
-})
-
-## display the data frame
-
-st.write("Here is teh data frame")
-
-st.write(df)
-
-chart_data=pd.DataFrame(
-    np.random.randn(20,3), columns=['a','b','c']
-)
-
-st.line_chart(chart_data)
+        st.line_chart(data)
+        st.write("Material-style data table:")

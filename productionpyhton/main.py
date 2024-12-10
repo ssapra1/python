@@ -1,9 +1,10 @@
 # Extend sidebar navigation with logic for application switching
 
-import historicaldata
+import Productionhistoricaldata
 import sales
 import streamlit as st
 import productionform
+import SalesHistoricalData
 
 def main():
 
@@ -45,10 +46,10 @@ elif st.session_state["app_page"] == "Sales":
     sales.main()
 elif st.session_state["app_page"] == "HistoricalData":
     st.write("You are in HistoricalData.")
-    historicaldata.main()
+    Productionhistoricaldata.main()
 elif st.session_state["app_page"] == "SalesHistoricalData":
     st.write("You are in SalesHistoricalData.")
-    historicaldata.main()
+    SalesHistoricalData.main()
 
 if __name__ == "__main__":
     main()

@@ -75,6 +75,8 @@ def main():
         else:
             st.write("The uploaded file does not contain all required columns.")
 
+            # Adding additional Streamlit elements for interaction
+
 
 if __name__ == "__main__":
     main()

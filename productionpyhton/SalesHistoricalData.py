@@ -59,8 +59,8 @@ def main():
                 # Insert all data into the database
                 for _, row in data[column_headers].iterrows():
                     cursor.execute('''
-                             INSERT INTO SalesFormData (date, brand, weight, category, phr, bundle_count, pipe_count)
-                            VALUES (?, ?, ?, ?, ?, ?, ?)
+                             INSERT INTO SalesFormData (ID,date, brand, weight, category, phr, bundle_count, pipe_count)
+                            VALUES ( ? ,?, ?, ?, ?, ?, ?, ?)
                           ''', tuple(row))
             # Commit changes and close the connection
             conn.commit()

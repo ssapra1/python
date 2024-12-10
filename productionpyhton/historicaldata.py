@@ -31,7 +31,7 @@ def main():
         import sqlite3
 
         # Assuming `data` is the DataFrame from the uploaded file
-        column_headers = ["ID", "Date", "Brand", "Category", "Weight", "Entered Weight Number", "PHR", "DOP", "Batch"]
+        column_headers = ["ID", "Date", "Brand", "Category", "Weight", "Entered Weight Number", "PHR", "DOP", "Batch","bundleQty","pipeQty"]
 
         # Ensure the uploaded file contains required columns
         if all(col in data.columns for col in column_headers):
@@ -50,7 +50,9 @@ def main():
                     Entered_Weight_Number REAL,
                     PHR TEXT,
                     DOP TEXT,
-                    Batch TEXT
+                    Batch TEXT,
+                    undleQty TEXT,
+                    pipeQty TEXT
                 )
             ''')
 
@@ -60,7 +62,7 @@ def main():
                 # Insert all data into the database
                 for _, row in data[column_headers].iterrows():
                     cursor.execute('''
-                              INSERT INTO form_data (ID, Date, Brand, Category, Weight, Entered_Weight_Number, PHR, DOP, Batch)
+                              INSERT INTO form_data (ID, Date, Brand, Category, Weight, Entered_Weight_Number, PHR, DOP, Batch,bundleQty,pipeQty)
                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                           ''', tuple(row))
             # Commit changes and close the connection

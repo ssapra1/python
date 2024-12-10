@@ -5,10 +5,10 @@ import streamlit as st
 from datetime import datetime
 import historicaldata
 import sales
+
+
 def main():
-
     st.title('Production Form for Saxena Industries ')
-
 
     st.markdown(
         """
@@ -44,15 +44,15 @@ def main():
         selected_date = st.date_input("Select a date", datetime.now())
 
         # Dropdown menu
-        dropdown_values = ["SAFAL", "SARAS", "ENDO" , "GE", "SVE"]
+        dropdown_values = ["SAFAL", "SARAS", "ENDO", "GE", "SVE"]
         selected_brand_option = st.selectbox("Choose a Brand ", dropdown_values)
 
         dropdown_values = ["LMS (20-40)", "MMS (40-52)", "HMS (52-70)", "Others"]
         selected_category_option = st.selectbox("Choose a Category ", dropdown_values)
-        if selected_category_option =="Others":
-             other_category = st.text_input("Please specify the category")
+        if selected_category_option == "Others":
+            other_category = st.text_input("Please specify the category")
 
-        dropdown_values = ["30", "32", "38", "44","48","52","56","60","Others"]
+        dropdown_values = ["30", "32", "38", "44", "48", "52", "56", "60", "Others"]
         selected_weight_option = st.selectbox("Choose a Weight ", dropdown_values)
         if selected_weight_option == "Others":
             other_weight = st.text_input("Please specify the Weight")
@@ -67,17 +67,19 @@ def main():
         except ValueError:
             st.write("Please enter a valid weight.")
 
-        dropdown_values = ["70","80","90", "100" ]
+        dropdown_values = ["70", "80", "90", "100"]
         selected_phr_option = st.selectbox("Choose a PHR ", dropdown_values)
 
         # Dropdown menu with Yes and No options
         yes_no_option = st.selectbox("Select DOP", ["Yes", "No"])
 
-        dropdown_values = ["6", "7","8","9","10","Others"]
+        dropdown_values = ["6", "7", "8", "9", "10", "Others"]
         selected_batch_option = st.selectbox("Choose a batch ", dropdown_values)
         if selected_batch_option == "Others":
             other_batch = st.text_input("Please specify the batch")
 
+        bundle_quantity = st.text_input("Enter a Bundle Quantity", value="0")
+        pipe_quantity = st.text_input("Enter a Pipe Quantity", value="0")
         is_valid = True
         error_message = ""
 
@@ -135,6 +137,14 @@ def main():
             is_valid = False
             error_message += "Please specify the batch for 'Others'.\n"
 
+        if not bundle_quantity:
+            is_valid = False
+            error_message += "Please enter a valid bundle quantity value.\n"
+
+        if not pipe_quantity:
+            is_valid = False
+            error_message += "Please enter a valid pipe quantity value.\n"
+
         if not is_valid:
             st.error("The form contains the following errors:\n" + error_message)
         st.write("Please fill out the form below:")
@@ -174,53 +184,70 @@ def main():
             if not yes_no_option:
                 st.warning("⚠️ Please select a DOP option.")
 
+            if not bundle_quantity:
+                st.warning("⚠️ Please enter a valid bundle quantity value.")
+
+            if not pipe_quantity:
+                st.warning("⚠️ Please enter a valid pipe quantity value.")
+
             if not selected_batch_option:
                 st.warning("⚠️ Please select a batch option.")
             elif selected_batch_option == "Others" and not other_batch:
                 st.warning("⚠️ Please specify the batch for 'Others'.")
-        # Submit button
 
+        # Submit button
         submitted = st.form_submit_button("Submit")
 
     import sqlite3
+
     def insert_into_database(data):
-        # Connect to the SQLite database (or creates it if it doesn't exist)
-        conn = sqlite3.connect('production_form.db')
-        cursor = conn.cursor()
+        # Use a context manager for the database connection
+        with sqlite3.connect('production_form.db') as conn:
+            cursor = conn.cursor()
+            # Create table if it doesn't already exist
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS form_data (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    date TEXT,
+                    brand TEXT,
+                    category TEXT,
+                    weight TEXT,
+                    entered_weight_number TEXT,
+                    phr TEXT,
+                    dop TEXT,
+                    batch TEXT,
+                    bundleQty TEXT,
+                    pipeQty TEXT
+                )
+            ''')
 
-        # Create the table if it doesn't exist
-        cursor.execute('''
-                 CREATE TABLE IF NOT EXISTS form_data (
-                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                     date TEXT,
-                     brand TEXT,
-                     category TEXT,
-                     weight TEXT,
-                     entered_weight_number TEXT,
-                     phr TEXT,
-                     dop TEXT,
-                     batch TEXT
-                 )
-             ''')
+            # Prepare data to ensure it contains scalar values (not lists)
+            date = data.get("Date")[0] if isinstance(data.get("Date"), list) else data.get("Date")
+            brand = data.get("Brand")[0] if isinstance(data.get("Brand"), list) else data.get("Brand")
+            category = data.get("Category")[0] if isinstance(data.get("Category"), list) else data.get("Category")
+            weight = data.get("Weight")[0] if isinstance(data.get("Weight"), list) else data.get("Weight")
+            entered_weight_number = data.get("Entered Weight Number")[0] if isinstance(
+                data.get("Entered Weight Number"),
+                list) else data.get(
+                "Entered Weight Number")
+            phr = data.get("PHR")[0] if isinstance(data.get("PHR"), list) else data.get("PHR")
+            dop = data.get("DOP")[0] if isinstance(data.get("DOP"), list) else data.get("DOP")
+            batch = data.get("Batch")[0] if isinstance(data.get("Batch"), list) else data.get("Batch")
+            bundle_qty = data.get("Bundle Quantity")[0] if isinstance(data.get("Bundle Quantity"), list) else data.get(
+                "Bundle Quantity")
+            pipe_qty = data.get("Pipe Quantity")[0] if isinstance(data.get("Pipe Quantity"), list) else data.get(
+                "Pipe Quantity")
 
-        # Insert the data into the table
-        cursor.execute('''
-                 INSERT INTO form_data (date, brand, category, weight, entered_weight_number, phr, dop, batch)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-             ''', (
-            data["Date"][0],
-            data["Brand"][0],
-            data["Category"][0],
-            data["Weight"][0],
-            data["Entered Weight Number"][0],
-            data["PHR"][0],
-            data["DOP"][0],
-            data["Batch"][0]
-        ))
+            # Insert data into the table
+            cursor.execute('''
+                INSERT INTO form_data (date, brand, category, weight, entered_weight_number, phr, dop, batch, bundleQty, pipeQty)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (date, brand, category, weight, entered_weight_number, phr, dop, batch, bundle_qty, pipe_qty))
 
-        # Commit the transaction and close the connection
-        conn.commit()
-        conn.close()
+            # Commit the transaction (optional since 'with' handles it)
+            conn.commit()
+
+        st.success("Data successfully saved to the database!")
 
     # In the submit section, call this function
     if submitted and is_valid:
@@ -258,7 +285,7 @@ def main():
         if all_data:
             # Define column headers based on the table schema
             column_headers = ["ID", "Date", "Brand", "Category", "Weight", "Entered Weight Number", "PHR", "DOP",
-                              "Batch"]
+                              "Batch","bundleQty","pipeQty"]
 
             # Use pandas to create a DataFrame and display it
             df_all_data = pd.DataFrame(all_data, columns=column_headers)

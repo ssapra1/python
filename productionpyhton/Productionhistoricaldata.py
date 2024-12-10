@@ -70,7 +70,11 @@ def main():
             conn.close()
 
             st.write("Data has been inserted into the database successfully.")
+
+
         else:
             st.write("The uploaded file does not contain all required columns.")
+
+
 if __name__ == "__main__":
     main()

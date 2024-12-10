@@ -66,6 +66,57 @@ def main():
             conn.commit()
             conn.close()
 
+            # Adding additional Streamlit elements for interaction
+            st.header("Sales Data Analysis Dashboard")
+
+            # Adding metric widgets to display key information
+            st.subheader("Key Metrics")
+            if "Weight (kg)" in data.columns and "Bundle Count" in data.columns:
+                total_weight = data["Weight (kg)"].sum()
+                total_bundles = data["Bundle Count"].sum()
+                st.metric(label="Total Weight (kg)", value=f"{total_weight:.2f}")
+                st.metric(label="Total Bundles", value=int(total_bundles))
+
+            # Adding checkbox for file preview
+            if st.checkbox("Preview First 5 Rows of Data"):
+                st.write(data.head())
+
+            # Adding a multiselect to filter data by Category
+            if "Category" in data.columns:
+                selected_categories = st.multiselect(
+                    "Select Categories to Display:",
+                    options=data["Category"].unique(),
+                    default=data["Category"].unique()
+                )
+                filtered_data = data[data["Category"].isin(selected_categories)]
+                st.write("Filtered Data:")
+                st.dataframe(filtered_data)
+
+            # Adding an expander for advanced filtering options
+            with st.expander("Advanced Filters"):
+                if "Brand" in data.columns:
+                    selected_brands = st.multiselect(
+                        "Select Brands:",
+                        options=data["Brand"].unique(),
+                        default=data["Brand"].unique()
+                    )
+                    filtered_data = filtered_data[filtered_data["Brand"].isin(selected_brands)]
+
+                if "Weight (kg)" in data.columns:
+                    min_weight, max_weight = st.slider(
+                        "Select Weight Range (kg):",
+                        min_value=float(data["Weight (kg)"].min()),
+                        max_value=float(data["Weight (kg)"].max()),
+                        value=(float(data["Weight (kg)"].min()), float(data["Weight (kg)"].max()))
+                    )
+                    filtered_data = filtered_data[
+                        (filtered_data["Weight (kg)"] >= min_weight) &
+                        (filtered_data["Weight (kg)"] <= max_weight)
+                        ]
+
+                st.write("Data after applying all filters:")
+                st.dataframe(filtered_data)
+
             st.write("Data has been inserted into the database successfully.")
         else:
             st.write("The uploaded file does not contain all required columns.")

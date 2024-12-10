@@ -27,13 +27,14 @@ def main():
         """
         <style>
         .stApp {
-            background-image: url("E:/python/productionpyhton/images.jpg");
+            background-image: url("jetbrains://pycharm/navigate/reference?project=python&path=productionpyhton%2Fimages.jpg"); /* Use a relative path */
             background-size: cover;
         }
         </style>
         """,
         unsafe_allow_html=True
     )
+
     with st.form("my_form"):
 
         # Add a flag to track validation status

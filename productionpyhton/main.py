@@ -23,8 +23,11 @@ if st.sidebar.button("Go to Production"):
 if st.sidebar.button("Go to Sales"):
     navigate_to("Sales")
 
-if st.sidebar.button("Go to HistoricalData"):
+if st.sidebar.button("HistoricalData for Production"):
     navigate_to("HistoricalData")
+
+if st.sidebar.button("HistoricalData for Sales"):
+    navigate_to("SalesHistoricalData")
 
 
 # Logic to render different applications based on selection
@@ -34,12 +37,14 @@ elif st.session_state["app_page"] == "Production":
     st.write("You are in Production")
     productionform.main()
 elif st.session_state["app_page"] == "Sales":
-    st.write("You are inSales.")
+    st.write("You are in Sales.")
     sales.main()
 elif st.session_state["app_page"] == "HistoricalData":
-    st.write("You are HistoricalData.")
+    st.write("You are in HistoricalData.")
     historicaldata.main()
-
+elif st.session_state["app_page"] == "SalesHistoricalData":
+    st.write("You are in SalesHistoricalData.")
+    historicaldata.main()
 
 if __name__ == "__main__":
     main()

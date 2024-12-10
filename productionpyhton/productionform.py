@@ -4,7 +4,7 @@ import pandas as pd
 import streamlit as st
 from datetime import datetime
 import historicaldata
-import streamlit_app
+import sales
 def main():
 
     st.title('Production Form for Saxena Industries ')
@@ -35,7 +35,10 @@ def main():
         unsafe_allow_html=True
     )
     with st.form("my_form"):
-        st.write("Please fill out the form below:")
+
+        # Add a flag to track validation status
+
+        # Show the error message if validation fails
 
         # Calendar date selector
         selected_date = st.date_input("Select a date", datetime.now())
@@ -55,8 +58,7 @@ def main():
             other_weight = st.text_input("Please specify the Weight")
 
         # Text input that accepts only numbers with up to three decimal places
-        numeric_input = st.text_input("Enter a weight number  (up to three decimals)")
-
+        numeric_input = st.text_input("Enter a weight number  (up to three decimals)", value="0.000")
         # Validate the input to ensure it matches the required format
         try:
             float_value = float(numeric_input)
@@ -76,7 +78,108 @@ def main():
         if selected_batch_option == "Others":
             other_batch = st.text_input("Please specify the batch")
 
+        is_valid = True
+        error_message = ""
+
+        # Highlight fields with validation errors
+
+        # Validations for each field
+        if not selected_date:
+            is_valid = False
+            error_message += "Please select a valid date.\n"
+
+        if not selected_brand_option:
+            is_valid = False
+            error_message += "Please select a brand option.\n"
+
+        if not selected_category_option:
+            is_valid = False
+            error_message += "Please select a category option.\n"
+
+        if selected_category_option == "Others" and not other_category:
+            is_valid = False
+            error_message += "Please specify the category for 'Others'.\n"
+
+        if not selected_weight_option:
+            is_valid = False
+            error_message += "Please select a weight option.\n"
+
+        if selected_weight_option == "Others" and not other_weight:
+            is_valid = False
+            error_message += "Please specify the weight for 'Others'.\n"
+
+        if not numeric_input:
+            is_valid = False
+            error_message += "Please enter a valid numeric weight value.\n"
+        else:
+            try:
+                float_value = float(numeric_input)
+                rounded_value = round(float_value, 3)
+            except ValueError:
+                is_valid = False
+                error_message += "The weight value must be a valid number up to three decimals.\n"
+
+        if not selected_phr_option:
+            is_valid = False
+            error_message += "Please select a PHR option.\n"
+
+        if not yes_no_option:
+            is_valid = False
+            error_message += "Please select a DOP option.\n"
+
+        if not selected_batch_option:
+            is_valid = False
+            error_message += "Please select a batch option.\n"
+
+        if selected_batch_option == "Others" and not other_batch:
+            is_valid = False
+            error_message += "Please specify the batch for 'Others'.\n"
+
+        if not is_valid:
+            st.error("The form contains the following errors:\n" + error_message)
+        st.write("Please fill out the form below:")
+
+        if not is_valid:
+            st.error("The form contains the following errors:\n" + error_message)
+
+            # Highlight errors by displaying the fields with issues again
+            if not selected_date:
+                st.warning("⚠️ Please select a valid date.")
+
+            if not selected_brand_option:
+                st.warning("⚠️ Please select a brand option.")
+
+            if not selected_category_option:
+                st.warning("⚠️ Please select a category option.")
+            elif selected_category_option == "Others" and not other_category:
+                st.warning("⚠️ Please specify the category for 'Others'.")
+
+            if not selected_weight_option:
+                st.warning("⚠️ Please select a weight option.")
+            elif selected_weight_option == "Others" and not other_weight:
+                st.warning("⚠️ Please specify the weight for 'Others'.")
+
+            if not numeric_input:
+                st.warning("⚠️ Please enter a valid numeric weight value.")
+            else:
+                try:
+                    float_value = float(numeric_input)
+                    rounded_value = round(float_value, 3)
+                except ValueError:
+                    st.warning("⚠️ The weight value must be a valid number up to three decimals.")
+
+            if not selected_phr_option:
+                st.warning("⚠️ Please select a PHR option.")
+
+            if not yes_no_option:
+                st.warning("⚠️ Please select a DOP option.")
+
+            if not selected_batch_option:
+                st.warning("⚠️ Please select a batch option.")
+            elif selected_batch_option == "Others" and not other_batch:
+                st.warning("⚠️ Please specify the batch for 'Others'.")
         # Submit button
+
         submitted = st.form_submit_button("Submit")
 
     import sqlite3
@@ -120,7 +223,7 @@ def main():
         conn.close()
 
     # In the submit section, call this function
-    if submitted:
+    if submitted and is_valid:
         st.success("Data submitted successfully!")
 
         import pandas as pd

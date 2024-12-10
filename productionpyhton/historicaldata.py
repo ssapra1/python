@@ -9,15 +9,16 @@ from watchdog.events import FileSystemEventHandler
 
 
 def main():
-    st.title("CSV File Upload and Display")
+    st.title("Add historical data to database")
     with st.form("my_form1"):
 
      uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
-     submitted1 = st.form_submit_button('Submit 1')
+     submitted1 = st.form_submit_button('upload')
      st.write(submitted1)
     if submitted1:
        if uploaded_file is not None:
-        time.sleep(20)
+        with st.spinner('Reading from CSV file..'):
+               time.sleep(20)
         data = pd.read_csv(uploaded_file)
 
         st.write("Here is the uploaded file's data:")
@@ -25,6 +26,7 @@ def main():
 
         st.line_chart(data)
         st.write("Material-style data table:")
+
 
         import sqlite3
 
@@ -53,12 +55,14 @@ def main():
             ''')
 
             # Insert all data into the database
-            for _, row in data[column_headers].iterrows():
-                cursor.execute('''
-                    INSERT INTO form_data (ID, Date, Brand, Category, Weight, Entered_Weight_Number, PHR, DOP, Batch)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ''', tuple(row))
-
+            with st.spinner('Inserting data into database...'):
+                time.sleep(2)  # Optional delay to simulate loading effect
+                # Insert all data into the database
+                for _, row in data[column_headers].iterrows():
+                    cursor.execute('''
+                              INSERT INTO form_data (ID, Date, Brand, Category, Weight, Entered_Weight_Number, PHR, DOP, Batch)
+                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                          ''', tuple(row))
             # Commit changes and close the connection
             conn.commit()
             conn.close()

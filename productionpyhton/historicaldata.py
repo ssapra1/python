@@ -51,7 +51,7 @@ def main():
                     PHR TEXT,
                     DOP TEXT,
                     Batch TEXT,
-                    undleQty TEXT,
+                    bundleQty TEXT,
                     pipeQty TEXT
                 )
             ''')
@@ -63,7 +63,7 @@ def main():
                 for _, row in data[column_headers].iterrows():
                     cursor.execute('''
                               INSERT INTO form_data (ID, Date, Brand, Category, Weight, Entered_Weight_Number, PHR, DOP, Batch,bundleQty,pipeQty)
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                           ''', tuple(row))
             # Commit changes and close the connection
             conn.commit()

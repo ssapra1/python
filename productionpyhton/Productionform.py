@@ -1,3 +1,6 @@
+import sqlite3
+
+import pandas as pd
 import streamlit as st
 from datetime import datetime
 
@@ -122,6 +125,8 @@ def main():
 
     # In the submit section, call this function
     if submitted:
+        st.success("Data submitted successfully!")
+
         import pandas as pd
 
         # Prepare the data for the table
@@ -150,8 +155,42 @@ def main():
         st.write(df.style.set_table_styles(
             [{'selector': 'table', 'props': [('width', '100%')]}]
         ))
+        all_data = get_all_data_from_database()
+        if all_data:
+            # Define column headers based on the table schema
+            column_headers = ["ID", "Date", "Brand", "Category", "Weight", "Entered Weight Number", "PHR", "DOP",
+                              "Batch"]
 
-       
+            # Use pandas to create a DataFrame and display it
+            df_all_data = pd.DataFrame(all_data, columns=column_headers)
+            st.write("All Submitted Data:")
+            st.write(df_all_data.style.set_table_styles(
+                [{'selector': 'table', 'props': [('width', '100%')]}]
+            ))
+        else:
+            st.write("No data found in the database.")
+
+        # Reset the form fields after submission using session state
+
+        # Function to retrieve all records from database
+
+
+def get_all_data_from_database():
+    # Connect to the SQLite database
+    conn = sqlite3.connect('production_form.db')
+    cursor = conn.cursor()
+
+    # Retrieve all records from the form_data table
+    cursor.execute('SELECT * FROM form_data')
+    rows = cursor.fetchall()
+
+    # Close the connection
+    conn.close()
+
+    return rows
+
+
+# Fetch all data and display it in a table
 
 
 if __name__ == "__main__":

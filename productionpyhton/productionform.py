@@ -40,7 +40,7 @@ def main():
         # Add a flag to track validation status
 
         # Show the error message if validation fails
-
+        st.write("Dear User, if you are using other in Dropdown values, please select Others and Submit")
         # Calendar date selector
         selected_date = st.date_input("Select a date", datetime.now())
 
@@ -68,7 +68,7 @@ def main():
         except ValueError:
             st.write("Please enter a valid weight.")
 
-        dropdown_values = ["70", "80", "90", "100"]
+        dropdown_values = ["40", "50" ,"60", "70", "80", "90", "100"]
         selected_phr_option = st.selectbox("Choose a PHR ", dropdown_values)
 
         # Dropdown menu with Yes and No options

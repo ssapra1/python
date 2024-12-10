@@ -11,9 +11,10 @@ def main():
 
 if "app_page" not in st.session_state:
     st.session_state["app_page"] = "Home"
-
+    st.sidebar.image("images.jpg", use_container_width=True)
 
 def navigate_to(app_name):
+
     st.session_state["app_page"] = app_name
 
 
@@ -28,6 +29,9 @@ if st.sidebar.button("HistoricalData for Production"):
 
 if st.sidebar.button("HistoricalData for Sales"):
     navigate_to("SalesHistoricalData")
+
+if st.sidebar.button("Home"):
+    navigate_to("Home")
 
 
 # Logic to render different applications based on selection

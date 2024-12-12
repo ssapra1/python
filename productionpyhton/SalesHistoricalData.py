@@ -32,7 +32,7 @@ def main():
                 st.dataframe(combined_data)
 
                 # Specify the columns to retain and exclude "ID" from the database
-                required_columns = ["ID", "Date", "Brand", "Weight (kg)", "Category", "PHR", "bundle_count",
+                required_columns = ["ID", "Date", "Brand", "Weight (kg)", "Category", "PHR", "Bundle Count",
                                     "Pipe Count"]
 
                 # Check if all required columns exist in the combined data
@@ -65,7 +65,7 @@ def main():
                     # Write the filtered data into the database
                     filtered_data.rename(columns={
                         "Weight (kg)": "weight",
-                        "bundle_count": "bundle_count",
+                        "Bundle Count": "bundle_count",
                         "Pipe Count": "pipe_count"
                     }, inplace=True)
                     filtered_data.to_sql("SalesFormData", conn, if_exists="append", index=False)

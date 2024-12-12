@@ -64,8 +64,9 @@ def main():
 
                     # Write the filtered data into the database
                     filtered_data.rename(columns={
-                        "Weight (kg)": "weight"
-
+                        "Weight (kg)": "weight",
+                        "bundle_count": "bundle_count",
+                        "Pipe Count": "pipe_count"
                     }, inplace=True)
                     filtered_data.to_sql("SalesFormData", conn, if_exists="append", index=False)
 

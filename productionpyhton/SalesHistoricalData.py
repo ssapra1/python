@@ -32,7 +32,7 @@ def main():
                 st.dataframe(combined_data)
 
                 # Specify the columns to retain and exclude "ID" from the database
-                required_columns = ["ID", "Date", "Brand", "Weight (kg)", "Category", "PHR", "Bundle Count",
+                required_columns = ["ID", "Date", "Brand", "Weight (kg)", "Category", "PHR", "bundle_count",
                                     "Pipe Count"]
 
                 # Check if all required columns exist in the combined data

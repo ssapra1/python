@@ -85,7 +85,7 @@ def main():
 
     try:
         # Establish database connection
-        conn = sqlite3.connect("production_form.db.db")
+        conn = sqlite3.connect("production_form.db")
         cursor = conn.cursor()
 
         # Query all data from the SalesData table

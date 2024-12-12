@@ -53,7 +53,7 @@ def main():
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         Date TEXT,
                         Brand TEXT,
-                        Weight_kg REAL,
+                        weight REAL,
                         Category TEXT,
                         PHR INTEGER,
                         bundle_count INTEGER,

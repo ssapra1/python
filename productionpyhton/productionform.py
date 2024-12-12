@@ -22,18 +22,7 @@ def main():
         """,
         unsafe_allow_html=True
     )
-    # Include custom CSS for background image
-    st.markdown(
-        """
-        <style>
-        .stApp {
-            background-image: url("jetbrains://pycharm/navigate/reference?project=python&path=productionpyhton%2Fimages.jpg"); /* Use a relative path */
-            background-size: cover;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+
 
     with st.form("my_form"):
 

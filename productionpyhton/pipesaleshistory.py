@@ -5,113 +5,86 @@ def main():
     import sqlite3
 
     # Define required columns
+    # Define required columns
     required_columns = [
-        "Date of Sale", "Party Name", "Item Sold", "Bundle", "Qty( s)", "total weight",
-        "Rate", "Gross Amount", "GST rate", "GST Amount", "Total Sale", "Name Used",
-        "Amount Received- Date", "Amount Received", "Balance Amount Received- Date",
-        "Balance Amount Received", "Balance", "Commnets"
+        "id", "date_of_sale", "party_name", "category", "bundle", "qty", "total_weight", "rate",
+        "gross_amount", "gst_rate", "gst_amount", "total_sale", "name_used", "amount_received_date",
+        "amount_received", "balance_received_date", "balance_received", "balance", "comments"
     ]
 
-    # Streamlit app
-    st.title("Sales Data File Uploader")
-
-    st.markdown("""
-    Upload multiple files containing sales data.
-    The app validates whether uploaded files contain the required columns.
-    """)
-
-    # File uploader for multiple files
-    uploaded_files = st.file_uploader("Upload CSV files", type=["csv"], accept_multiple_files=True)
-
+    # File upload functionality for multiple CSV files
+    uploaded_files = st.file_uploader("Upload CSV files", type="csv", accept_multiple_files=True)
     if uploaded_files:
-        for uploaded_file in uploaded_files:
-            # Display file name
-            st.subheader(f"File: {uploaded_file.name}")
-
+        all_data = []  # List to hold validated DataFrames
+        for file in uploaded_files:
             try:
-                # Read file into DataFrame
-                df = pd.read_csv(uploaded_file)
-
-                # Check if all required columns are in the uploaded file
-                missing_columns = [col for col in required_columns if col not in df.columns]
-                if not missing_columns:
-                    st.success("All required columns are present!")
-                    st.dataframe(df)  # Display the loaded DataFrame
-
-                    # Establish database connection (or create database if it doesn't exist)
-                    conn = sqlite3.connect("production_form.db")
-                    cursor = conn.cursor()
-
-                    # Create a table if it doesn't already exist
-                    cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS SalesData (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        [Date of Sale] TEXT,
-                        [Party Name] TEXT,
-                        [Item Sold] TEXT,
-                        [Bundle] TEXT,
-                        [Qty( s)] INTEGER,
-                        [total weight] REAL,
-                        [Rate] REAL,
-                        [Gross Amount] REAL,
-                        [GST rate] REAL,
-                        [GST Amount] REAL,
-                        [Total Sale] REAL,
-                        [Name Used] TEXT,
-                        [Amount Received- Date] TEXT,
-                        [Amount Received] REAL,
-                        [Balance Amount Received- Date] TEXT,
-                        [Balance Amount Received] REAL,
-                        [Balance] REAL,
-                        [Commnets] TEXT
-                    )
-                    """)
-                    conn.commit()
-
-                    # Store the data into the database
-                    df.to_sql('SalesData', conn, if_exists='append', index=False)
-
-                    st.success("Data successfully added to the database!")
+                # Read the uploaded file into a DataFrame
+                df = pd.read_csv(file)
+                # Check if required columns are present
+                if all(column in df.columns for column in required_columns):
+                    all_data.append(df)  # Append valid DataFrame to list
                 else:
-                    st.error(f"The following required columns are missing: {', '.join(missing_columns)}")
+                    st.error(f"The file '{file.name}' is missing one or more required columns.")
+
             except Exception as e:
-                st.error(f"Error reading file {uploaded_file.name}: {e}")
-            finally:
-                if 'conn' in locals():
-                    conn.close()
-
-    # Add a section to display all data from the database
-    st.title("View All Sales Data")
-
-    try:
-        # Establish database connection
-        conn = sqlite3.connect("production_form.db")
-        cursor = conn.cursor()
-
-        # Query all data from the SalesData table
-        cursor.execute("SELECT * FROM SalesData")
-        all_data = cursor.fetchall()
-
-        # Fetch column names from the table for headers
-        cursor.execute("PRAGMA table_info(SalesData)")
-        column_names = [info[1] for info in cursor.fetchall()]
-
-        # Display data in a table format if available
+                st.error(f"Error reading file '{file.name}': {e}")
+        # When we have valid data, concatenate and display it
         if all_data:
-            st.subheader("All Sales Data")
-            st.write("Below is the data stored in the database:")
-            df_all_data = pd.DataFrame(all_data, columns=column_names)
-            st.dataframe(df_all_data)  # Streamlit table
-        else:
-            st.info("No data found in the database.")
-    except Exception as view_all_error:
-        st.error(f"Error while retrieving data: {view_all_error}")
-    finally:
-        conn.close()
+            combined_data = pd.concat(all_data, ignore_index=True)
+            st.write("Uploaded Data Display:")
+            st.dataframe(combined_data)
 
+            # Drop the 'id' column if it exists
+            if 'id' in combined_data.columns:
+                combined_data = combined_data.drop('id', axis=1)
+            # Database connection and insertion
+            conn = sqlite3.connect('production_form.db')  # Create/connect to SQLite database
+            cursor = conn.cursor()
+            # Create table if it does not exist
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS SalesData (
+                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    date_of_sale TEXT,
+                    party_name TEXT,
+                    category TEXT,
+                    bundle TEXT,
+                    qty INTEGER,
+                    total_weight REAL,
+                    rate REAL,
+                    gross_amount REAL,
+                    gst_rate REAL,
+                    gst_amount REAL,
+                    total_sale REAL,
+                    name_used TEXT,
+                    amount_received_date TEXT,
+                    amount_received REAL,
+                    balance_received_date TEXT,
+                    balance_received REAL,
+                    balance REAL,
+                    comments TEXT
+                )
+            ''')
+            conn.commit()
+            # Insert the data into the database
+            combined_data.to_sql('SalesData', conn, if_exists='append', index=False)
+            st.success("Data successfully added to the database!")
+            # Close the database connection
+            conn.close()
 
-# Call the main function
-if __name__ == "__main__":
-    main()
+            # Display all the data from the database in a table format
+            conn = sqlite3.connect('production_form.db')  # Reconnect to SQLite database
+            cursor = conn.cursor()
 
-# Streamlit app
+            # Fetch all data from the table
+            cursor.execute("SELECT * FROM SalesData")
+            data = cursor.fetchall()
+
+            # Get the column names for the table
+            columns = [description[0] for description in cursor.description]
+
+            # Display the data in a table format
+            st.write("All Data from Database:")
+            st.table(pd.DataFrame(data, columns=columns))
+
+            # Close the database connection after fetching and displaying
+            conn.close()

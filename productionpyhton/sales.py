@@ -56,7 +56,7 @@ def main():
                         {
                             "Date": [date],
                             "Brand": [brand],
-                            "Weight (kg)": [weight],
+                            "Weight": [weight],
                             "Category": [category],
                             "PHR": [phr],
                             "Bundle Count": [bundle_count],
@@ -71,7 +71,7 @@ def main():
                         # Define column headers based on the table schema
 
                         # Fetch column headers dynamically
-                        column_headers = ["ID", "Date", "Brand", "Weight (kg)", "Category", "PHR", "Bundle Count",
+                        column_headers = ["ID", "Date", "Brand", "Weight", "Category", "PHR", "Bundle Count",
                "Pipe Count"]
 
                         # Use pandas to create a DataFrame and display it

@@ -56,17 +56,16 @@ def main():
                         Weight_kg REAL,
                         Category TEXT,
                         PHR INTEGER,
-                        Bundle_Count INTEGER,
-                        Pipe_Count INTEGER
+                        bundle_count INTEGER,
+                        pipe_count INTEGER
                     )
                     """
                     cursor.execute(table_creation_query)
 
                     # Write the filtered data into the database
                     filtered_data.rename(columns={
-                        "Weight (kg)": "Weight",
-                        "Bundle Count": "Bundle_Count",
-                        "Pipe Count": "Pipe_Count"
+                        "Weight (kg)": "weight"
+
                     }, inplace=True)
                     filtered_data.to_sql("SalesFormData", conn, if_exists="append", index=False)
 

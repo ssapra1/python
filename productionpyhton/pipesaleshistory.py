@@ -34,16 +34,19 @@ def main():
             st.write("Uploaded Data Display:")
             st.dataframe(combined_data)
 
-            # Drop the 'id' column if it exists
+            # Drop 'Unnamed' columns and 'id' column if they exist
+            combined_data = combined_data.loc[:, ~combined_data.columns.str.contains('^Unnamed')]
             if 'id' in combined_data.columns:
-                combined_data = combined_data.drop('id', axis=1)
+                combined_data = combined_data.drop(columns=['id'])
+            # Drop the 'id' column if it exists
+
             # Database connection and insertion
             conn = sqlite3.connect('production_form.db')  # Create/connect to SQLite database
             cursor = conn.cursor()
             # Create table if it does not exist
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS SalesData (
-                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     date_of_sale TEXT,
                     party_name TEXT,
                     category TEXT,
@@ -79,12 +82,18 @@ def main():
             cursor.execute("SELECT * FROM SalesData")
             data = cursor.fetchall()
 
+            columns_query = "PRAGMA table_info(SalesData)"
+            columns = [column[1] for column in cursor.execute(columns_query).fetchall()]
+
+            # Create a Pandas DataFrame from the fetched data
+            all_data_df = pd.DataFrame(data, columns=columns)
+
+            # Display the DataFrame in Streamlit
+            st.dataframe(all_data_df)
             # Get the column names for the table
-            columns = [description[0] for description in cursor.description]
 
             # Display the data in a table format
             st.write("All Data from Database:")
-            st.table(pd.DataFrame(data, columns=columns))
 
             # Close the database connection after fetching and displaying
             conn.close()

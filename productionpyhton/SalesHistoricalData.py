@@ -51,13 +51,13 @@ def main():
                     table_creation_query = """
                     CREATE TABLE IF NOT EXISTS SalesFormData (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        Date TEXT,
-                        Brand TEXT,
-                        weight REAL,
-                        Category TEXT,
-                        PHR INTEGER,
-                        bundle_count INTEGER,
-                        pipe_count INTEGER
+                         date TEXT,
+                                brand TEXT,
+                                weight REAL,
+                                category TEXT,
+                                phr TEXT,
+                                bundle_count INTEGER,
+                                pipe_count INTEGER
                     )
                     """
                     cursor.execute(table_creation_query)

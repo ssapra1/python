@@ -5,7 +5,8 @@ import sales
 import streamlit as st
 import productionform
 import SalesHistoricalData
-
+import pipe_sales as pipesales
+import  pipesaleshistory
 def main():
 
     st.write('')
@@ -34,6 +35,14 @@ if st.sidebar.button("HistoricalData for Sales"):
 if st.sidebar.button("Home"):
     navigate_to("Home")
 
+if st.sidebar.button("Pipe Sales Form"):
+    navigate_to("PipeSalesForm")
+
+if st.sidebar.button("Pipe Sales History"):
+    navigate_to("PipeSalesHistory")
+
+
+
 
 # Logic to render different applications based on selection
 if st.session_state["app_page"] == "Home":
@@ -50,6 +59,14 @@ elif st.session_state["app_page"] == "HistoricalData":
 elif st.session_state["app_page"] == "SalesHistoricalData":
     st.write("You are in SalesHistoricalData.")
     SalesHistoricalData.main()
+elif st.session_state["app_page"] == "PipeSalesForm":
+    st.write("You are in Pipe Sales Form.")
+    pipesales.main()
+elif st.session_state["app_page"] == "PipeSalesHistory":
+    st.write("You are in Pipe Sales History.")
+    pipesaleshistory.main()
+
+
 
 if __name__ == "__main__":
     main()

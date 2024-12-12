@@ -13,7 +13,7 @@ def main():
 
 if "app_page" not in st.session_state:
     st.session_state["app_page"] = "Home"
-    st.sidebar.image("images.jpg", use_container_width=True)
+
 
 def navigate_to(app_name):
 
